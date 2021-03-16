@@ -1,0 +1,39 @@
+{
+    "name": "andreyAKor/otus_arch_project",
+    "description": "OTUS Arch Project",
+    "keywords": ["yii2", "framework", "advanced"],
+    "homepage": "https://github.com/andreyAKor/otus_arch_project",
+    "type": "project",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.4.0",
+        "yiisoft/yii2": "~2.0.14",
+        "yiisoft/yii2-bootstrap": "~2.0.0",
+        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
+        "yiisoft/yii2-httpclient": "^2.0",
+        "yiisoft/yii2-jui": "^2.0",
+        "mero/yii2-monolog": "*",
+        "carbondate/carbon": "*"
+    },
+    "require-dev": {
+        "yiisoft/yii2-debug": "~2.1.0",
+        "yiisoft/yii2-gii": "~2.1.0",
+        "yiisoft/yii2-faker": "~2.0.0",
+        "codeception/base": "^2.4.0",
+        "phpunit/phpunit": "~5.7.27 || ~6.5.5",
+        "codeception/verify": "~0.5.0 || ~1.1.0",
+        "symfony/browser-kit": ">=2.7 <=4.2.4"
+    },
+    "config": {
+        "process-timeout": 1800,
+        "fxp-asset": {
+            "enabled": false
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package bid.bid;
+
+// Сервис для Заявок
+service Bid {
+	// Создание заявки
+	rpc Create(CreateIn) returns (CreateOut) {}
+
+	// Возвращает данные заявки
+	rpc Get(GetIn) returns (GetOut) {}
+}
+
+enum OutStatus {
+	UNKNOW = 0;
+	OK = 1;
+	VALIDATION = 2;
+	ERROR = 3;
+}
+
+message OutHeader {
+	OutStatus status = 1; // Статус
+	string message = 2; // Сообщение
+}
+
+// Create
+message CreateIn {
+	uint64 coinType = 1; // Тип отдаваемой монеты
+	string value = 2; // Количество получаемых средств
+	string address = 3; // Адрес куда средства нужно отправить
+}
+message CreateOut {
+	OutHeader header = 1; // Заголовок ответа
+	string id = 2; // ID-заявки
+}
+
+// Get
+message GetIn {
+	string id = 1; // ID заявки
+}
+message GetOut {
+	OutHeader header = 1; // Заголовок ответа
+	uint64 status = 2; // Статус
+	uint64 receivedCoinType = 3; // Тип получаемой монеты
+	string receivedValue = 4; // Количество получаемых средств
+	string receivedAddress = 5; // Адрес куда получаемые средства нужно отправить
+	uint64 givenCoinType = 6; // Тип отдаваемой монеты
+	string givenValue = 7; // Количество отдаваемых средств
+	string givenAddress = 8; // Адрес куда отдаваемые средства нужно отправить
+}

@@ -1,0 +1,120 @@
+version: "3"
+
+networks:
+  net:
+    driver: bridge
+  db:
+    driver: bridge
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: build/package/gateway/Dockerfile
+    depends_on:
+      - nats
+      - bid
+    restart: on-failure
+    ports:
+      - "6080:6080"
+    expose:
+      - 6080
+    environment:
+      MICRO_REGISTRYADDRESS: "nats:4222"
+      MICRO_BROKERADDRESS: "nats:4222"
+      MICRO_TRANSPORTADDRESS: "nats:4222"
+
+      HTTP_HOST: "0.0.0.0"
+      HTTP_PORT: 6080
+    volumes:
+      - /var/log/gateway/:/var/log/gateway/
+    networks:
+      - net
+
+  bid:
+    build:
+      context: .
+      dockerfile: build/package/bid/Dockerfile
+    depends_on:
+      - nats
+      - postgres
+    restart: on-failure
+    environment:
+      MICRO_REGISTRYADDRESS: "nats:4222"
+      MICRO_BROKERADDRESS: "nats:4222"
+      MICRO_TRANSPORTADDRESS: "nats:4222"
+
+      DATABASE_DSN: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
+
+      NODES_BTC_HOST: "host.docker.internal"
+      NODES_BTC_PORT: 18332
+      NODES_BTC_USER: "btcuser"
+      NODES_BTC_PASS: "btcpass123"
+
+      NODES_ETH_HOST: "host.docker.internal"
+      NODES_ETH_PORT: 8545
+    volumes:
+      - /var/log/bid/:/var/log/bid/
+    networks:
+      - net
+      - db
+
+  pedding:
+    build:
+      context: .
+      dockerfile: build/package/pedding/Dockerfile
+    depends_on:
+      - postgres
+    restart: on-failure
+    environment:
+      DATABASE_DSN: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
+    volumes:
+      - /var/log/pedding/:/var/log/pedding/
+    networks:
+      - db
+
+  goose:
+    build:
+      context: .
+      dockerfile: build/package/goose/Dockerfile
+    depends_on:
+      - postgres
+    restart: on-failure
+    environment:
+      GOOSE_DRIVER: "postgres"
+      GOOSE_DBSTRING: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
+    networks:
+      - db
+
+  postgres:
+    image: postgres:11-alpine
+    ports:
+      - "55432:5432"
+    expose:
+      - 55432
+    environment:
+      POSTGRES_USER: bid
+      POSTGRES_PASSWORD: bid123
+      POSTGRES_DB: bid
+    networks:
+      - db
+
+  nats:
+    image: nats:2.1.9-alpine3.12
+    ports:
+      - "54222:4222" # is for clients.
+      - "56222:6222" # is an HTTP management port for information reporting.
+      - "58222:8222" # is a routing port for clustering.
+    expose:
+      - 54222
+      - 56222
+    networks:
+      - net
+
+#  bitcoin:
+#    build:
+#      context: .
+#      dockerfile: build/package/bitcoin/Dockerfile
+#    restart: on-failure
+#    volumes:
+#      - /home/andreyakor/.bitcoin/:/bitcoin/.bitcoin/

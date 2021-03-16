@@ -1,0 +1,23 @@
+php_value date.timezone "Europe/Moscow"
+php_value error_reporting 32759
+
+Options +FollowSymlinks
+Options All -Indexes
+
+AddDefaultCharset UTF-8
+
+RewriteEngine on
+RewriteRule ^admin(.+)?$ backend/web/$1 [L,PT]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . frontend/web/index.php
+
+RewriteRule /?$ frontend/web/$1 [L,PT]
+
+# not rewrite css, js and images
+RewriteCond %{REQUEST_URI} !\.(?:css|js|jpe?g|gif|png)$ [NC]
+#RewriteRule ^abc/(.+)/(.+)/ abc.php?id=$1&name=$2 [L]
+
+# rewrite css, js and images, from root
+RewriteRule ^abc/[^/]+/[^/]+/(.+)$ $1  [L]

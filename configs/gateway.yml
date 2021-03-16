@@ -1,0 +1,21 @@
+app:
+  name: "gateway.service"
+
+micro:
+  registry: "nats"
+  registryAddress: "0.0.0.0:34222"
+
+  broker: "nats"
+  brokerAddress: "0.0.0.0:34222"
+
+  transport: "nats"
+  transportAddress: "0.0.0.0:34222"
+
+logging:
+  file: "./gateway.log"
+  level: "debug"
+
+http:
+  host: "0.0.0.0"
+  port: 6080
+  bodyLimit: 1048576

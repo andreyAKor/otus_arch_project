@@ -1,0 +1,80 @@
+{
+	"info": {
+		"_postman_id": "3d384303-12b5-4a0e-9b08-09a3a8bb1387",
+		"name": "Arch Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "coin_type",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "value",
+							"value": "1000",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "lalala",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:6080/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6080",
+					"path": [
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:6080/get?id=378125f7-200c-4c93-be54-60a621515fae",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6080",
+					"path": [
+						"get"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "378125f7-200c-4c93-be54-60a621515fae"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

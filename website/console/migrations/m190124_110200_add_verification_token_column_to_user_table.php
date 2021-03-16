@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+
+use yii\db\Migration;
+
+/**
+ * Class m190124_110200_add_verification_token_column_to_user_table
+ */
+class m190124_110200_add_verification_token_column_to_user_table extends Migration
+{
+    /**
+     * @return bool
+     */
+    public function up(): bool
+    {
+        $this->addColumn('{{%user}}', 'verification_token', $this->string()->defaultValue(null));
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function down(): bool
+    {
+        $this->dropColumn('{{%user}}', 'verification_token');
+
+        return true;
+    }
+}
