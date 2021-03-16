@@ -5,6 +5,16 @@ networks:
     driver: bridge
   db:
     driver: bridge
+  btc:
+    driver: bridge
+  eth:
+    driver: bridge
+  nginx:
+    driver: bridge
+  apache:
+    driver: bridge
+  gateway:
+    driver: bridge
 
 services:
   gateway:
@@ -27,7 +37,7 @@ services:
       HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6080
     volumes:
-      - /var/log/gateway/:/var/log/gateway/
+      - /var/log/otus_arch_project/:/var/log/gateway/
     networks:
       - net
 
@@ -38,6 +48,8 @@ services:
     depends_on:
       - nats
       - postgres
+      - bitcoin
+      - ethereum
     restart: on-failure
     environment:
       MICRO_REGISTRYADDRESS: "nats:4222"
@@ -46,18 +58,20 @@ services:
 
       DATABASE_DSN: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
 
-      NODES_BTC_HOST: "host.docker.internal"
+      NODES_BTC_HOST: "bitcoin"
       NODES_BTC_PORT: 18332
       NODES_BTC_USER: "btcuser"
       NODES_BTC_PASS: "btcpass123"
 
-      NODES_ETH_HOST: "host.docker.internal"
+      NODES_ETH_HOST: "ethereum"
       NODES_ETH_PORT: 8545
     volumes:
-      - /var/log/bid/:/var/log/bid/
+      - /var/log/otus_arch_project/:/var/log/bid/
     networks:
       - net
       - db
+      - btc
+      - eth
 
   pending:
     build:
@@ -65,13 +79,25 @@ services:
       dockerfile: build/package/pending/Dockerfile
     depends_on:
       - postgres
+      - bitcoin
+      - ethereum
     restart: on-failure
     environment:
       DATABASE_DSN: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
+
+      NODES_BTC_HOST: "bitcoin"
+      NODES_BTC_PORT: 18332
+      NODES_BTC_USER: "btcuser"
+      NODES_BTC_PASS: "btcpass123"
+
+      NODES_ETH_HOST: "ethereum"
+      NODES_ETH_PORT: 8545
     volumes:
-      - /var/log/pending/:/var/log/pending/
+      - /var/log/otus_arch_project/:/var/log/pending/
     networks:
       - db
+      - btc
+      - eth
 
   goose:
     build:
@@ -85,6 +111,34 @@ services:
       GOOSE_DBSTRING: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
     networks:
       - db
+
+  bitcoin:
+    build:
+      context: .
+      dockerfile: build/package/bitcoin/Dockerfile
+    restart: on-failure
+    ports:
+      - "58332:18332"
+    expose:
+      - 58332
+    volumes:
+      - /home/andreyakor/.bitcoin/bitcoin:/bitcoin/.bitcoin/bitcoin
+    networks:
+      - btc
+
+  ethereum:
+    build:
+      context: .
+      dockerfile: build/package/ethereum/Dockerfile
+    restart: on-failure
+    ports:
+      - "58545:8545"
+    expose:
+      - 58545
+    volumes:
+      - /home/andreyakor/.ethereum:/root/.ethereum
+    networks:
+      - eth
 
   postgres:
     image: postgres:11-alpine
@@ -111,10 +165,50 @@ services:
     networks:
       - net
 
-#  bitcoin:
-#    build:
-#      context: .
-#      dockerfile: build/package/bitcoin/Dockerfile
-#    restart: on-failure
-#    volumes:
-#      - /home/andreyakor/.bitcoin/:/bitcoin/.bitcoin/
+  nginx:
+    build:
+      context: .
+      dockerfile: build/package/nginx/Dockerfile
+    restart: on-failure
+    environment:
+      - TERM=xterm
+    ports:
+      - "50080:80"
+      - "50443:443"
+    expose:
+      - 50080
+      - 50443
+    volumes:
+      - ./configs/nginx/local:/etc/nginx/local
+      - /var/log/otus_arch_project/nginx:/var/log/nginx
+#      - build/package/nginx/ssl:/etc/ssl
+    volumes_from:
+      - apache:ro
+    links:
+      - apache
+    networks:
+      - nginx
+      - apache
+
+  apache:
+    build:
+      context: .
+      dockerfile: build/package/apache/Dockerfile
+    restart: on-failure
+    environment:
+      - TERM=xterm
+    ports:
+      - "58080:8080"
+    expose:
+      - 58080
+    volumes:
+      - ./website/:/var/www/html
+      - ./configs/apache/conf/apache/local:/etc/apache2/local
+      - /var/log/otus_arch_project/apache2:/var/log/apache2
+#    links:
+#      - mysql
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - apache
+      - gateway
