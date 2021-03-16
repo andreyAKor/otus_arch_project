@@ -4,7 +4,7 @@ GOBIN=$(GOBASE)/bin
 build:
 	@go build -ldflags="-s -w" -o '$(GOBIN)/gateway' ./cmd/gateway/main.go || exit
 	@go build -ldflags="-s -w" -o '$(GOBIN)/bid' ./cmd/bid/main.go || exit
-	@go build -ldflags="-s -w" -o '$(GOBIN)/pedding' ./cmd/pedding/main.go || exit
+	@go build -ldflags="-s -w" -o '$(GOBIN)/pending' ./cmd/pending/main.go || exit
 
 run:
 	@go build -o '$(GOBIN)/gateway' ./cmd/gateway/main.go

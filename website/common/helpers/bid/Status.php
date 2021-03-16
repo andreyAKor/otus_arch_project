@@ -13,7 +13,7 @@ final class Status
      * Ожидание отправки
      * @var string
      */
-    public const PEDDING = 1;
+    public const PENDING = 1;
 
     /**
      * Закрыт
@@ -32,7 +32,7 @@ final class Status
      * @var array
      */
     private static array $_statusNames = [
-        self::PEDDING => 'Ожидание отправки',
+        self::PENDING => 'Ожидание отправки',
         self::CLOSE => 'Закрыт',
         self::ERROR => 'Ошибка'
     ];

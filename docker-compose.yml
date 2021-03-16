@@ -59,17 +59,17 @@ services:
       - net
       - db
 
-  pedding:
+  pending:
     build:
       context: .
-      dockerfile: build/package/pedding/Dockerfile
+      dockerfile: build/package/pending/Dockerfile
     depends_on:
       - postgres
     restart: on-failure
     environment:
       DATABASE_DSN: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
     volumes:
-      - /var/log/pedding/:/var/log/pedding/
+      - /var/log/pending/:/var/log/pending/
     networks:
       - db
 

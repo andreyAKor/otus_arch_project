@@ -27,7 +27,7 @@ $ make build
 ./bin/bid --config=./configs/bid.yml
 ```
 ```shell script
-./bin/pedding --config=./configs/pedding.yml
+./bin/pending --config=./configs/pending.yml
 ```
 
 Сервис поднимается на локальном хосте на порту 6080.

@@ -100,7 +100,7 @@ func (b *Bid) Create(ctx context.Context, in *schemaBid.CreateIn, out *schemaBid
 	}
 
 	id, err := b.repo.Create(ctx, repository.Bid{
-		Status:           repository.StatusPedding,
+		Status:           repository.StatusPending,
 		ReceivedCoinType: in.CoinType,
 		ReceivedValue:    in.Value,
 		ReceivedAddress:  receivedAddress,
