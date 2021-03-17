@@ -9,10 +9,10 @@ networks:
     driver: bridge
   eth:
     driver: bridge
-  nginx:
-    driver: bridge
-  apache:
-    driver: bridge
+#  nginx:
+#    driver: bridge
+#  apache:
+#    driver: bridge
   gateway:
     driver: bridge
 
@@ -165,50 +165,50 @@ services:
     networks:
       - net
 
-  nginx:
-    build:
-      context: .
-      dockerfile: build/package/nginx/Dockerfile
-    restart: on-failure
-    environment:
-      - TERM=xterm
-    ports:
-      - "50080:80"
-      - "50443:443"
-    expose:
-      - 50080
-      - 50443
-    volumes:
-      - ./configs/nginx/local:/etc/nginx/local
-      - /var/log/otus_arch_project/nginx:/var/log/nginx
+#  nginx:
+#    build:
+#      context: .
+#      dockerfile: build/package/nginx/Dockerfile
+#    restart: on-failure
+#    environment:
+#      - TERM=xterm
+#    ports:
+#      - "50080:80"
+#      - "50443:443"
+#    expose:
+#      - 50080
+#      - 50443
+#    volumes:
+#      - ./configs/nginx/local:/etc/nginx/local
+#      - /var/log/otus_arch_project/nginx:/var/log/nginx
 #      - build/package/nginx/ssl:/etc/ssl
-    volumes_from:
-      - apache:ro
-    links:
-      - apache
-    networks:
-      - nginx
-      - apache
-
-  apache:
-    build:
-      context: .
-      dockerfile: build/package/apache/Dockerfile
-    restart: on-failure
-    environment:
-      - TERM=xterm
-    ports:
-      - "58080:8080"
-    expose:
-      - 58080
-    volumes:
-      - ./website/:/var/www/html
-      - ./configs/apache/conf/apache/local:/etc/apache2/local
-      - /var/log/otus_arch_project/apache2:/var/log/apache2
+#    volumes_from:
+#      - apache:ro
 #    links:
-#      - mysql
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - apache
-      - gateway
+#      - apache
+#    networks:
+#      - nginx
+#      - apache
+
+#  apache:
+#    build:
+#      context: .
+#      dockerfile: build/package/apache/Dockerfile
+#    restart: on-failure
+#    environment:
+#      - TERM=xterm
+#    ports:
+#      - "58080:8080"
+#    expose:
+#      - 58080
+#    volumes:
+#      - ./website/:/var/www/html
+##      - ./configs/apache/conf/apache/local:/etc/apache2/local
+#      - /var/log/otus_arch_project/apache2:/var/log/apache2
+##    links:
+##      - mysql
+#    cap_add:
+#      - SYS_PTRACE
+#    networks:
+#      - apache
+#      - gateway

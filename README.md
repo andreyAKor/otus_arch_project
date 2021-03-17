@@ -1,38 +1,34 @@
 # Проектная работа по курсу "Архитектура и шаблоны проектирования"
 
 ### Запуск сервиса
-Поднять docker-контейнер с Postgress:
+Поднимаем docker-compose с сервисом внутри
 ```shell script
-docker run -d \
---name pg-otus-arch \
--e POSTGRES_USER=bid \
--e POSTGRES_PASSWORD=bid123 \
--e POSTGRES_DB=bid \
--e PGDATA=/var/lib/postgresql/data/pgdata \
--v '/home/andreyakor/Документы/OTUS/Архитектура и шаблоны проектирования/psqldata':/var/lib/postgresql/data \
--p 5432:5432 \
-postgres
+$ make up
 ```
 
-Выполняем сборку сервисов:
+Чтобы остановить docker-окружение сервиса:
 ```shell script
-$ make build
-```
-
-Открываем три окна терминала и запускаем сервисы:
-```shell script
-./bin/gateway --config=./configs/gateway.yml
-```
-```shell script
-./bin/bid --config=./configs/bid.yml
-```
-```shell script
-./bin/pending --config=./configs/pending.yml
+$ make down
 ```
 
 Сервис поднимается на локальном хосте на порту 6080.
 
 Отдельно настраиваем Apache и Nginx для работы сайты из директории `./website`. Примеры файлов конфигов для Apache и Nginx находятся в директории `./website/configs/`.
+
+## Выполнить настройку внутри `./website`
+Необходимо глобально установить PHP 7.4.
+
+Выполнить загрузку зависимостей:
+```shell script
+$ php composer.phar install
+```
+
+В консоли выволнить инициализацию окружения:
+```shell script
+$ php init
+```
+
+Прописать настройки к СУБД MySQL в файле `/common/config/main-local.php`
 
 ---
 

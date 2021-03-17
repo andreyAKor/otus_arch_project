@@ -15,12 +15,12 @@ class LoginForm extends Model
     /**
      * @var string
      */
-    public string $username;
+    public string $username = '';
 
     /**
      * @var string
      */
-    public string $password;
+    public string $password = '';
 
     /**
      * @var bool
@@ -30,7 +30,7 @@ class LoginForm extends Model
     /**
      * @var User|null
      */
-    private ?User $_user;
+    private ?User $_user = null;
 
     /**
      * @return array
