@@ -33,7 +33,26 @@ return [
         'path' => 'dev',
         'setWritable' => [
             'backend/runtime',
-            'backend/web/assets',
+            'backend/web/admin/assets',
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+            'yii_test',
+        ],
+        'setCookieValidationKey' => [
+            'backend/config/main-local.php',
+            'common/config/codeception-local.php',
+            'frontend/config/main-local.php',
+        ],
+    ],
+    'Docker' => [
+        'path' => 'docker',
+        'setWritable' => [
+            'backend/runtime',
+            'backend/web/admin/assets',
             'console/runtime',
             'frontend/runtime',
             'frontend/web/assets',
@@ -52,7 +71,7 @@ return [
         'path' => 'prod',
         'setWritable' => [
             'backend/runtime',
-            'backend/web/assets',
+            'backend/web/admin/assets',
             'console/runtime',
             'frontend/runtime',
             'frontend/web/assets',

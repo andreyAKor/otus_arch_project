@@ -1,20 +1,25 @@
 version: "3"
 
 networks:
-  net:
+  nats:
     driver: bridge
-  db:
+  postgres:
     driver: bridge
   btc:
     driver: bridge
   eth:
     driver: bridge
-#  nginx:
-#    driver: bridge
-#  apache:
-#    driver: bridge
+  nginx:
+    driver: bridge
+  apache:
+    driver: bridge
   gateway:
     driver: bridge
+  mysql:
+    driver: bridge
+
+volumes:
+  site: {}
 
 services:
   gateway:
@@ -39,7 +44,7 @@ services:
     volumes:
       - /var/log/otus_arch_project/:/var/log/gateway/
     networks:
-      - net
+      - nats
 
   bid:
     build:
@@ -68,8 +73,8 @@ services:
     volumes:
       - /var/log/otus_arch_project/:/var/log/bid/
     networks:
-      - net
-      - db
+      - nats
+      - postgres
       - btc
       - eth
 
@@ -95,7 +100,7 @@ services:
     volumes:
       - /var/log/otus_arch_project/:/var/log/pending/
     networks:
-      - db
+      - postgres
       - btc
       - eth
 
@@ -110,7 +115,7 @@ services:
       GOOSE_DRIVER: "postgres"
       GOOSE_DBSTRING: "host=postgres port=5432 password=bid123 user=bid dbname=bid sslmode=disable"
     networks:
-      - db
+      - postgres
 
   bitcoin:
     build:
@@ -122,7 +127,7 @@ services:
     expose:
       - 58332
     volumes:
-      - /home/andreyakor/.bitcoin/bitcoin:/bitcoin/.bitcoin/bitcoin
+      - .bitcoin/bitcoin:/bitcoin/.bitcoin/bitcoin
     networks:
       - btc
 
@@ -136,7 +141,7 @@ services:
     expose:
       - 58545
     volumes:
-      - /home/andreyakor/.ethereum:/root/.ethereum
+      - .ethereum:/root/.ethereum
     networks:
       - eth
 
@@ -151,7 +156,7 @@ services:
       POSTGRES_PASSWORD: bid123
       POSTGRES_DB: bid
     networks:
-      - db
+      - postgres
 
   nats:
     image: nats:2.1.9-alpine3.12
@@ -163,52 +168,53 @@ services:
       - 54222
       - 56222
     networks:
-      - net
+      - nats
 
-#  nginx:
-#    build:
-#      context: .
-#      dockerfile: build/package/nginx/Dockerfile
-#    restart: on-failure
-#    environment:
-#      - TERM=xterm
-#    ports:
-#      - "50080:80"
-#      - "50443:443"
-#    expose:
-#      - 50080
-#      - 50443
-#    volumes:
-#      - ./configs/nginx/local:/etc/nginx/local
-#      - /var/log/otus_arch_project/nginx:/var/log/nginx
-#      - build/package/nginx/ssl:/etc/ssl
-#    volumes_from:
-#      - apache:ro
-#    links:
-#      - apache
-#    networks:
-#      - nginx
-#      - apache
+  nginx:
+    build:
+      context: .
+      dockerfile: build/package/nginx/Dockerfile
+    restart: on-failure
+    ports:
+      - "50080:80"
+      - "50443:443"
+    expose:
+      - 50080
+      - 50443
+    volumes:
+      - site:/var/www/html
+      - /var/log/otus_arch_project/nginx:/var/log/nginx
+    networks:
+      - nginx
+      - apache
 
-#  apache:
-#    build:
-#      context: .
-#      dockerfile: build/package/apache/Dockerfile
-#    restart: on-failure
-#    environment:
-#      - TERM=xterm
-#    ports:
-#      - "58080:8080"
-#    expose:
-#      - 58080
-#    volumes:
-#      - ./website/:/var/www/html
-##      - ./configs/apache/conf/apache/local:/etc/apache2/local
-#      - /var/log/otus_arch_project/apache2:/var/log/apache2
-##    links:
-##      - mysql
-#    cap_add:
-#      - SYS_PTRACE
-#    networks:
-#      - apache
-#      - gateway
+  apache:
+    build:
+      context: .
+      dockerfile: build/package/apache/Dockerfile
+    restart: on-failure
+    ports:
+      - "58080:80"
+    expose:
+      - 58080
+    volumes:
+      - site:/var/www/html
+      - /var/log/otus_arch_project/apache2:/var/log/apache2
+    depends_on:
+      - mysql
+    networks:
+      - apache
+      - mysql
+      - gateway
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "53306:3306"
+    expose:
+      - 53306
+    environment:
+      - MYSQL_ROOT_PASSWORD=Qybf0H8aQ0
+      - MYSQL_DATABASE=otus_arch_project
+    networks:
+      - mysql

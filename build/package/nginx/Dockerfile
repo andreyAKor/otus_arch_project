@@ -1,21 +1,6 @@
-# Версия контейнера nginx на linux Alpine
-# Источники:
-# 	- https://github.com/nginxinc/docker-nginx/blob/25a3fc7343c6916fce1fba32caa1e8de8409d79f/stable/alpine/Dockerfile
-# 	- http://firstwiki.ru/index.php/%D0%94%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B5%D0%B9_nginx_%D0%B2_Linux_(Debian/Ubuntu/CentOS)
-# 	- https://github.com/nginxinc/docker-nginx/blob/de8822d8d91ff0802989bc0a12f8ab55596a513c/mainline/jessie/Dockerfile
-# 	- https://github.com/yzprofile/ngx_http_dyups_module
-
-
-# Базовый образ
 FROM alpine:3.4
 
-# Автор
-MAINTAINER Andrey A. Kor. <andrey_kor@inbox.ru>
-
-# Устанавливаемая версия nginx
 ENV NGINX_VERSION 1.15.5
-
-##########################################################################################################################################
 
 RUN \
 #	GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
@@ -40,7 +25,7 @@ RUN \
 		--with-http_realip_module \
 #		--with-http_addition_module \
 #		--with-http_sub_module \
-#		--with-http_dav_module \
+		--with-http_dav_module \
 #		--with-http_flv_module \
 #		--with-http_mp4_module \
 #		--with-http_gunzip_module \
@@ -186,9 +171,6 @@ RUN \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
 
-##########################################################################################################################################
-
-
 # Готовим директории
 RUN \
 	rm -rf /etc/nginx/conf.d && \
@@ -199,40 +181,12 @@ RUN \
 	chown root:root /etc/nginx/nginx.conf && \
 	chmod 0777 /etc/nginx/nginx.conf
 
-
-
-##########################################################################################################################################
-
-
-# Путь к конфиг-файлу
 COPY ./configs/nginx/nginx.conf /etc/nginx/nginx.conf
-
-# Путь к дополнительным файлам конфигурации
 COPY ./configs/nginx/global /etc/nginx/global
 COPY ./configs/nginx/local /etc/nginx/local
 
-# Монтируем локальные конфигурации nginx, тем самым мы избавляем себя от необходимости, при изменении конфигов, заново пересобирать контейнеры
-VOLUME /etc/nginx/local
-
-# Путь к ssl-сертификатам
-#COPY ./ssl /etc/ssl
-#VOLUME /etc/ssl
-
-# Монтируем директорию логов
-#VOLUME /var/log
-
-# Выводим наружу порт
 EXPOSE 80 443
 
-
-##########################################################################################################################################
-
-
-# Docker: запуск нескольких приложений в одном контейнере
-# Источники:
-#	- https://blog.amartynov.ru/docker-%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D0%BA-%D0%BD%D0%B5%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%BA%D0%B8%D1%85-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9/
 COPY ./build/package/nginx/start.sh /
 RUN chmod +x /start.sh
 CMD ["/start.sh"]
-
-#CMD ["nginx", "-g", "daemon off;"]
