@@ -45,6 +45,7 @@ services:
       - /var/log/otus_arch_project/:/var/log/gateway/
     networks:
       - nats
+      - gateway
 
   bid:
     build:
@@ -176,11 +177,11 @@ services:
       dockerfile: build/package/nginx/Dockerfile
     restart: on-failure
     ports:
-      - "50080:80"
-      - "50443:443"
+      - "80:80"
+      - "443:443"
     expose:
-      - 50080
-      - 50443
+      - 80
+      - 443
     volumes:
       - site:/var/www/html
       - /var/log/otus_arch_project/nginx:/var/log/nginx
